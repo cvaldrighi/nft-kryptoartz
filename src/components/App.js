@@ -3,6 +3,8 @@ import Web3 from "web3";
 import detectEthereumProvider from "@metamask/detect-provider";
 //import { ethers } from "ethers/lib";
 import KryptoBird from '../abis/KryptoBird.json';
+import { MDBCard, MDBCardBody, MDBCardTitle, MDBCardText, MDBCardImage, MDBBtn } from 'mdb-react-ui-kit';
+import './App.css';
 
 class App extends Component {
 
@@ -133,10 +135,10 @@ class App extends Component {
 
     render() {
         return (
-            <div>
+            <div className="container-filled">
                 <nav className="navbar navbar-dark fixed-top bg-dark flex-md-nowrap p-0 shadow">
                     <div className="navbar-brand col-sm-3 col-md-3 mr-0" style={{ color: "white" }}>
-                        KryptoBirdz NFTs
+                        Valdrigh NFTs
                     </div>
                     <ul className="navbar-nav px-3">
                         <li className="nav-item text-nowrap d-none d-sm-none d-sm-block">
@@ -151,7 +153,7 @@ class App extends Component {
                     <div className="row">
                         <main role='main' className="col-lg-12 d-flex text-center">
                             <div className="content mr-auto ml-auto" style={{ opacity: '0.8' }}>
-                                <h1 style={{ color: 'white' }}>NFT</h1>
+                                <h1 style={{ color: 'black' }}>NFT</h1>
                                 <form onSubmit={(event) => {
                                     event.preventDefault();
                                     const kryptoBird = this.kryptoBird.value;
@@ -164,6 +166,27 @@ class App extends Component {
                                 </form>
                             </div>
                         </main>
+                    </div>
+                    <hr></hr>
+                    <div className="row text-center">
+                        {this.state.kryptoBirdz.map((kryptoBird, key) => {
+                            return (
+                                <div>
+                                    <div>
+                                        <MDBCard className="token img" style={{ maxWidth: '22rem', maxHeight: '45rem' }}>
+                                            <MDBCardImage src={kryptoBird} position='top' heigth='250rem' style={{ marginRight: '4px' }} />
+                                            <MDBCardBody>
+                                                <MDBCardTitle>NFT</MDBCardTitle>
+                                                <MDBCardText>
+                                                    developed and designed by Valdrigh
+                                                </MDBCardText>
+                                            </MDBCardBody>
+                                        </MDBCard>
+
+                                    </div>
+                                </div>
+                            )
+                        })}
                     </div>
                 </div>
             </div>
