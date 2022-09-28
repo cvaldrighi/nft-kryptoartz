@@ -1,16 +1,85 @@
 import React, { Component } from "react";
 import Web3 from "web3";
 import detectEthereumProvider from "@metamask/detect-provider";
-//import KryptoBird from '../abis/KryptoBird.json';
+//import { ethers } from "ethers/lib";
+import KryptoBird from '../abis/KryptoBird.json';
 
 class App extends Component {
+
+    constructor(props) {
+        super(props);
+        this.state = {
+            account: '',
+            //networkIs: ''
+            contract: null,
+            totalSupply: 0,
+            kryptoBirdz: []
+        }
+    }
+
+    /////////////////////////////USING ETHERS.JS INSTEAD OF WEB3/////////////////////////////////////////
+
+    // async componentDidMount() {
+    //     await this.loadWeb3ProviderAndBlockchainData();
+    // };
+
+    // async loadWeb3ProviderAndBlockchainData() {
+
+    //     // Loads MetaMask as the provider
+    //     const provider = new ethers.providers.Web3Provider(window.ethereum);
+    //     const signer = provider.getSigner();
+
+    //     // Check if provider loaded
+    //     if (provider) {
+    //         console.log('eth wallet is connected');
+    //     } else {
+    //         console.log('no eth wallet detected');
+    //     };
+
+    //     // Get accounts and networkId
+    //     const accounts = await provider.send('eth_accounts', []);
+    //     const networkId = await provider.send('net_version', []);
+
+    //     // Update State with info
+    //     this.setState({
+    //         account: accounts,
+    //         networkIs: networkId
+    //     });
+
+    //     // Loads Contract information from the Blockchain
+    //     const networkData = KryptoBird.networks[networkId];
+    //     //console.log(accounts, networkId, networkData);
+    //     if (networkData) {
+
+    //         const contractAbi = KryptoBird.abi;
+    //         const contractAddress = networkData.address;
+
+    //         // Ethers use a segregated approach to reading / writing to Contracts
+    //         // To read from, use contractRead
+    //         // To write to (like to Mint, etc, use contractSign
+
+    //         const contractRead = new ethers.Contract(contractAddress, contractAbi, provider);
+    //         const contractSign = new ethers.Contract(contractAddress, contractAbi, signer);
+
+    //         this.setState({
+    //             contractRead: contractRead,
+    //             contractSign: contractSign
+    //         });
+    //         console.log(contractRead);
+    //     } else {
+    //         console.log('Smart Contract is not Deployed')
+    //     };
+    // }
+
+    // WEB 3 IS DEPRECATED
+    //////////////////////////////////////////////////WEB3 WAY//////////////////////////////////////////////
 
     async componentDidMount() {
         await this.loadWeb3();
         await this.loadBlockchainData();
     }
 
-    //detect ethereum provider
+    // detect ethereum provider
     async loadWeb3() {
         const provider = await detectEthereumProvider();
 
@@ -24,14 +93,79 @@ class App extends Component {
     }
 
     async loadBlockchainData() {
-        const accounts = await window.web3.eth.requestAccounts();
-        console.log(accounts);
+        const web3 = window.web3;
+        const accounts = await web3.eth.requestAccounts();
+        this.setState({ account: accounts[0] });
+
+        const networkId = await web3.eth.net.getId();
+        const networkData = KryptoBird.networks[networkId];
+
+        if (networkData) {
+            const abi = KryptoBird.abi;
+            const address = networkData.address;
+            const contract = new web3.eth.Contract(abi, address);
+            this.setState({ contract });
+
+            const totalSupply = await contract.methods.totalSupply().call();
+            this.setState({ totalSupply });
+
+
+            for (let i = 1; i <= totalSupply; i++) {
+                const KryptoBird = await contract.methods.kryptoBirdz(i - 1).call();
+
+                this.setState({
+                    kryptoBirdz: [...this.state.kryptoBirdz, KryptoBird]
+                });
+                console.log(this.state.kryptoBirdz);
+            }
+        }
     }
+
+    mint = (kryptoBird) => {
+        this.state.contract.methods.mint(kryptoBird).send({ from: this.state.account }).once('receipt', (receipt) => {
+            this.setState({
+                kryptoBirdz: [...this.state.kryptoBirdz, KryptoBird]
+            });
+        });
+
+    }
+
 
     render() {
         return (
             <div>
-                <h1>NFT Marketplace</h1>
+                <nav className="navbar navbar-dark fixed-top bg-dark flex-md-nowrap p-0 shadow">
+                    <div className="navbar-brand col-sm-3 col-md-3 mr-0" style={{ color: "white" }}>
+                        KryptoBirdz NFTs
+                    </div>
+                    <ul className="navbar-nav px-3">
+                        <li className="nav-item text-nowrap d-none d-sm-none d-sm-block">
+                            <small className="text-white">
+                                {this.state.account}
+                            </small>
+                        </li>
+                    </ul>
+                </nav>
+
+                <div className="container-fluid mt-1">
+                    <div className="row">
+                        <main role='main' className="col-lg-12 d-flex text-center">
+                            <div className="content mr-auto ml-auto" style={{ opacity: '0.8' }}>
+                                <h1 style={{ color: 'white' }}>NFT</h1>
+                                <form onSubmit={(event) => {
+                                    event.preventDefault();
+                                    const kryptoBird = this.kryptoBird.value;
+                                    this.mint(kryptoBird);
+                                }}>
+                                    <input type='text' placeholder='Add a file location' className="form-control mb-1" ref={(input) => this.kryptoBird = input} />
+
+                                    <input style={{ margin: '6px' }} type='submit' className="btn btn-primary btn-black" value='MINT' />
+
+                                </form>
+                            </div>
+                        </main>
+                    </div>
+                </div>
             </div>
         )
     }
