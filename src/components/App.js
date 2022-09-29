@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import Web3 from "web3";
 import detectEthereumProvider from "@metamask/detect-provider";
 //import { ethers } from "ethers/lib";
-import KryptoBird from '../abis/KryptoBird.json';
+import KryptoArt from '../abis/KryptoArt.json';
 import { MDBCard, MDBCardBody, MDBCardTitle, MDBCardText, MDBCardImage, MDBBtn } from 'mdb-react-ui-kit';
 import './App.css';
 
@@ -15,7 +15,7 @@ class App extends Component {
             //networkIs: ''
             contract: null,
             totalSupply: 0,
-            kryptoBirdz: []
+            kryptoArtz: []
         }
     }
 
@@ -49,11 +49,11 @@ class App extends Component {
     //     });
 
     //     // Loads Contract information from the Blockchain
-    //     const networkData = KryptoBird.networks[networkId];
+    //     const networkData = KryptoArt.networks[networkId];
     //     //console.log(accounts, networkId, networkData);
     //     if (networkData) {
 
-    //         const contractAbi = KryptoBird.abi;
+    //         const contractAbi = KryptoArt.abi;
     //         const contractAddress = networkData.address;
 
     //         // Ethers use a segregated approach to reading / writing to Contracts
@@ -100,10 +100,10 @@ class App extends Component {
         this.setState({ account: accounts[0] });
 
         const networkId = await web3.eth.net.getId();
-        const networkData = KryptoBird.networks[networkId];
+        const networkData = KryptoArt.networks[networkId];
 
         if (networkData) {
-            const abi = KryptoBird.abi;
+            const abi = KryptoArt.abi;
             const address = networkData.address;
             const contract = new web3.eth.Contract(abi, address);
             this.setState({ contract });
@@ -113,20 +113,20 @@ class App extends Component {
 
 
             for (let i = 1; i <= totalSupply; i++) {
-                const KryptoBird = await contract.methods.kryptoBirdz(i - 1).call();
+                const KryptoArt = await contract.methods.kryptoArtz(i - 1).call();
 
                 this.setState({
-                    kryptoBirdz: [...this.state.kryptoBirdz, KryptoBird]
+                    kryptoArtz: [...this.state.kryptoArtz, KryptoArt]
                 });
-                console.log(this.state.kryptoBirdz);
+                console.log(this.state.kryptoArtz);
             }
         }
     }
 
-    mint = (kryptoBird) => {
-        this.state.contract.methods.mint(kryptoBird).send({ from: this.state.account }).once('receipt', (receipt) => {
+    mint = (kryptoArt) => {
+        this.state.contract.methods.mint(kryptoArt).send({ from: this.state.account }).once('receipt', (receipt) => {
             this.setState({
-                kryptoBirdz: [...this.state.kryptoBirdz, KryptoBird]
+                kryptoArtz: [...this.state.kryptoArtz, KryptoArt]
             });
         });
 
@@ -156,10 +156,10 @@ class App extends Component {
                                 <h1 style={{ color: 'black' }}>NFT</h1>
                                 <form onSubmit={(event) => {
                                     event.preventDefault();
-                                    const kryptoBird = this.kryptoBird.value;
-                                    this.mint(kryptoBird);
+                                    const kryptoArt = this.kryptoArt.value;
+                                    this.mint(kryptoArt);
                                 }}>
-                                    <input type='text' placeholder='Add a file location' className="form-control mb-1" ref={(input) => this.kryptoBird = input} />
+                                    <input type='text' placeholder='Add a file location' className="form-control mb-1" ref={(input) => this.kryptoArt = input} />
 
                                     <input style={{ margin: '6px' }} type='submit' className="btn btn-primary btn-black" value='MINT' />
 
@@ -167,14 +167,13 @@ class App extends Component {
                             </div>
                         </main>
                     </div>
-                    <hr></hr>
                     <div className="row text-center">
-                        {this.state.kryptoBirdz.map((kryptoBird, key) => {
+                        {this.state.kryptoArtz.map((kryptoArt, key) => {
                             return (
                                 <div>
                                     <div>
                                         <MDBCard className="token img" style={{ maxWidth: '22rem', maxHeight: '45rem' }}>
-                                            <MDBCardImage src={kryptoBird} position='top' heigth='250rem' style={{ marginRight: '4px' }} />
+                                            <MDBCardImage src={kryptoArt} position='top' heigth='250rem' style={{ marginRight: '4px' }} />
                                             <MDBCardBody>
                                                 <MDBCardTitle>NFT</MDBCardTitle>
                                                 <MDBCardText>

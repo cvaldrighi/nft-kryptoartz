@@ -1,15 +1,15 @@
 const { assert } = require('chai');
-const KryptoBird = artifacts.require('./KryptoBird');
+const KryptoArt = artifacts.require('./KryptoArt');
 
 require('chai')
     .use(require('chai-as-promised'))
     .should()
 
 
-contract('KryptoBird', (accounts) => {
+contract('KryptoArt', (accounts) => {
     let contract;
     before(async () => {
-        contract = await KryptoBird.deployed();
+        contract = await KryptoArt.deployed();
     })
 
     describe('deployment', async () => {
@@ -23,12 +23,12 @@ contract('KryptoBird', (accounts) => {
 
         it('has a name', async () => {
             const name = await contract.name();
-            assert.equal(name, 'KryptoBird')
+            assert.equal(name, 'KryptoArt')
         })
 
         it('has a symbol', async () => {
             const symbol = await contract.symbol();
-            assert.equal(symbol, 'KBIRDZ');
+            assert.equal(symbol, 'KARTZ');
         })
 
     })
@@ -50,7 +50,7 @@ contract('KryptoBird', (accounts) => {
     })
 
     describe('indexing', async () => {
-        it('list KryptoBirdz', async () => {
+        it('list KryptoArtz', async () => {
             //minting new tokens
             await contract.mint('https...2');
             await contract.mint('https...3');
@@ -58,10 +58,10 @@ contract('KryptoBird', (accounts) => {
             const totalSupply = await contract.totalSupply();
 
             let result = [];
-            let KryptoBird;
+            let KryptoArt;
             for (i = 1; i <= totalSupply; i++) {
-                KryptoBird = await contract.kryptoBirdz(i - 1);
-                result.push(KryptoBird);
+                KryptoArt = await contract.kryptoArtz(i - 1);
+                result.push(KryptoArt);
             }
 
             let expected = ['https...1', 'https...2', 'https...3', 'https...4'];
